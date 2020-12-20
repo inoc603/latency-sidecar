@@ -1,5 +1,9 @@
-FROM ubuntu:latest
+FROM ubuntu:focal
 
 RUN apt update -y
 
-RUN apt install iputils-ping iproute2 -y
+RUN apt install iputils-ping iproute2 curl -y
+
+ADD test.sh .
+
+RUN chmod +x test.sh

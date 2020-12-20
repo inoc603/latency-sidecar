@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: latency-test
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: app
+    image: busybox
+    command: ['tail', '-F', '/dev/null']
+  - name: agent
+    image: latency-sidecar
+    imagePullPolicy: Never
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN

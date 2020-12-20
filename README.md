@@ -65,3 +65,56 @@ rtt min/avg/max/mdev = 20.246/25.485/43.983/9.277 ms
 ```
 
 可以发现，除了第一次延时较高外，基本做到了延时增加 20ms。证明此方法可行。
+
+## 使用 TC 命令行实现接口
+
+程序中调用命令行工具并不是一个特别好的办法，但我们可以先通过调用 tc
+命令来实现，以作为基准，再选择更好的 rtnetlink api。
+
+在 [pods.yml](pods.yml) 中，定义一个简单的 pod，同时启动应用容器和 agent。
+
+启动应用和 agent:
+
+```
+make k8s/run
+```
+
+测试设置延时：
+
+```
+# make k8s/test
+If you don't see a command prompt, try pressing enter.
+target ip: 10.1.0.20, agent port: 8080
+PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
+64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=0.649 ms
+64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=0.111 ms
+64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=0.248 ms
+
+--- 10.1.0.20 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2066ms
+rtt min/avg/max/mdev = 0.111/0.336/0.649/0.228 ms
+set latency to 20ms
+latency set to 20ms
+PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
+64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=20.3 ms
+64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=20.5 ms
+64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=21.4 ms
+
+--- 10.1.0.20 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 20.261/20.722/21.420/0.501 ms
+reset latency
+latency set to 0s
+ping target
+PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
+64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=0.074 ms
+64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=0.226 ms
+64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=0.195 ms
+
+--- 10.1.0.20 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2049ms
+rtt min/avg/max/mdev = 0.074/0.165/0.226/0.065 ms
+pod "client" deleted
+```
+
+这里为了简单，没有写程序检查结果，暂时靠肉眼观察输出即可。
