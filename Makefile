@@ -1,7 +1,7 @@
 build:
 	GOOS=linux GOARCH=amd64 go build .
 
-image: build
+image:
 	docker build -f Dockerfile -t latency-sidecar .
 
 pod=pods.yml
