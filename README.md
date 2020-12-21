@@ -35,7 +35,7 @@ make k8s/test
 [commit](https://github.com/inoc603/latency-sidecar/commit/fd48fafc7df06831bc9efc3b0ab88f5f85431d50)
 
 经过简单的搜索，了解到可以使用 [tc](https://man7.org/linux/man-pages/man8/tc.8.html)
-等工具设置网络延时。通过 [Dockerfile.poc](./Dockerfile.poc) 中，我们创建一个有相关依赖
+等工具设置网络延时。在 [Dockerfile.poc](./Dockerfile.poc) 中，我们创建一个有相关依赖
 的镜像，在本地使用 docker 对原理进行验证：
 
 ```
@@ -97,7 +97,7 @@ rtt min/avg/max/mdev = 20.246/25.485/43.983/9.277 ms
 [commit](https://github.com/inoc603/latency-sidecar/commit/98e5af16c103dbbed225c529f970df5c221b601e)
 
 程序中调用命令行工具并不是一个特别好的办法，但我们可以先通过调用 tc
-命令来实现，以作为基准，再选择更好的 rtnetlink api。
+命令实现，作为测试基准，再选择更好的 rtnetlink api。
 
 在 [pods.yml](pods.yml) 中，定义一个简单的 pod，同时启动应用容器和 agent。
 
