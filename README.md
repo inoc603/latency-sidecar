@@ -118,3 +118,22 @@ pod "client" deleted
 ```
 
 这里为了简单，没有写程序检查结果，暂时靠肉眼观察输出即可。
+
+## 直接使用 netlink 实现接口
+
+经过简单的搜索，找到了 [github.com/vishvananda/netlink](https://github.com/vishvananda/netlink)
+这个比较完整的、纯 go 的 netlink 实现。为了简单起见，我们使用不同的文件
+[pods-netlink.yml](./pods-netlink.yml) 来创建 pod, 而不使用
+configmap 等方式来配置。
+
+启动使用 netlink 的 agent:
+
+```
+make k8s/run pod=pods-netlink.yml
+```
+
+测试：
+
+```
+make k8s/test
+```

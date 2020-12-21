@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"time"
 
@@ -10,12 +11,24 @@ import (
 )
 
 func main() {
+	// for simplicity, we configure the agent with env variables
 	viper.SetEnvPrefix("LATENCY")
 	viper.AutomaticEnv()
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("interface", "eth0")
+	viper.SetDefault("handler", "tc")
 
-	app := createServer(&TcLatencySetter{}, viper.GetString("interface"))
+	var setter LatencySetter
+	switch viper.GetString("handler") {
+	case "netlink":
+		log.Println("using netlink to set latency")
+		setter = NetlinkLatencySetter{}
+	default:
+		log.Println("using tc to set latency")
+		setter = TcLatencySetter{}
+	}
+
+	app := createServer(setter, viper.GetString("interface"))
 	app.Run(net.JoinHostPort("", viper.GetString("port")))
 }
 
@@ -39,12 +52,15 @@ func createServer(m LatencySetter, netInterface string) *gin.Engine {
 		}
 
 		if err := m.SetLatency(netInterface, d); err != nil {
+			log.Printf("failed to set latency to %s: %v\n", d, err)
 			c.AbortWithError(
 				500,
 				fmt.Errorf("failed to set latency: %w", err),
 			)
 			return
 		}
+
+		log.Printf("latency set to %s\n", d)
 
 		c.String(200, fmt.Sprintf("latency set to %s\n", d))
 	})

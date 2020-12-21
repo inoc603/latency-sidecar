@@ -10,7 +10,7 @@ import (
 type TcLatencySetter struct{}
 
 // SetLatency sets extra latency of the given interface
-func (t *TcLatencySetter) SetLatency(iname string, latency time.Duration) error {
+func (t TcLatencySetter) SetLatency(iname string, latency time.Duration) error {
 	var cmd *exec.Cmd
 
 	if latency <= 0 {

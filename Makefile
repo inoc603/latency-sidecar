@@ -4,14 +4,23 @@ build:
 image: build
 	docker build -f Dockerfile -t latency-sidecar .
 
-k8s/run: image
-	kubectl create -f pods.yml
+pod=pods.yml
+k8s/run: image k8s/stop
+	kubectl create -f $(pod)
+	kubectl wait --for=condition=ready pod/latency-test
 
 k8s/stop:
-	kubectl delete pods latency-test
+	-kubectl delete pods latency-test
+
+skip_build=0
+
+k8s/logs:
+	kubectl logs -f latency-test -c agent
 
 k8s/test:
+ifneq ($(skip_build), 1)
 	docker build -f Dockerfile.poc -t latency-test .
+endif
 	@kubectl run -it --rm \
 		--restart=Never \
 		--image=latency-test \
@@ -21,3 +30,4 @@ k8s/test:
 
 run: build
 	docker-compose build && docker-compose up
+
