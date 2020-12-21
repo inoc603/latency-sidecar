@@ -92,7 +92,7 @@ rtt min/avg/max/mdev = 20.246/25.485/43.983/9.277 ms
 
 可以发现，除了第一次延时较高外，基本做到了延时增加 20ms。证明此方法可行。
 
-## 使用 TC 命令行实现接口
+### 使用 TC 命令行实现接口
 
 [commit](https://github.com/inoc603/latency-sidecar/commit/98e5af16c103dbbed225c529f970df5c221b601e)
 
@@ -152,7 +152,7 @@ pod "client" deleted
 
 这里为了简单，没有写程序检查结果，暂时靠肉眼观察输出即可。
 
-## 直接使用 netlink 实现接口
+### 直接使用 netlink 实现接口
 
 [commit](https://github.com/inoc603/latency-sidecar/commit/f0a4e56517a56100138e54201a5cf9eff4abb838)
 
