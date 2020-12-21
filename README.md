@@ -1,8 +1,32 @@
 # latency-sidecar
 
-## 题目
+A simple POC for learning how to add network latency to k8s pods.
 
-通过 sidecar，提供 HTTP 接口修改 k8s pod 的网络延时。
+## 问题
+
+如果通过 sidecar，提供 HTTP 接口修改 k8s pod 的网络延时。
+
+验证问题完成情况，请参考 [验证](#验证)。
+
+问题解决过程，可以参考 [解决过程记录](#解决过程记录)，和 [commits](https://github.com/inoc603/latency-sidecar/commits/main)。
+
+## 验证
+
+验证前需要完成以下准备：
+- 安装 docker
+- 在同一台机器上安装 k8s，以使用本地构建的镜像
+
+启动一个应用容器和 agent:
+
+```
+make k8s/run pod=pods-netlink.yml
+```
+
+测试延时:
+
+```
+make k8s/test
+```
 
 ## 解决过程记录
 
@@ -83,37 +107,42 @@ make k8s/run
 
 ```
 # make k8s/test
-If you don't see a command prompt, try pressing enter.
-target ip: 10.1.0.20, agent port: 8080
-PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
-64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=0.649 ms
-64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=0.111 ms
-64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=0.248 ms
+target ip: 10.1.0.78, agent port: 8080
+PING 10.1.0.78 (10.1.0.78) 56(84) bytes of data.
+64 bytes from 10.1.0.78: icmp_seq=1 ttl=64 time=0.242 ms
+64 bytes from 10.1.0.78: icmp_seq=2 ttl=64 time=0.157 ms
+64 bytes from 10.1.0.78: icmp_seq=3 ttl=64 time=0.147 ms
 
---- 10.1.0.20 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2066ms
-rtt min/avg/max/mdev = 0.111/0.336/0.649/0.228 ms
+--- 10.1.0.78 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2063ms
+rtt min/avg/max/mdev = 0.147/0.182/0.242/0.042 ms
+
 set latency to 20ms
 latency set to 20ms
-PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
-64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=20.3 ms
-64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=20.5 ms
-64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=21.4 ms
 
---- 10.1.0.20 ping statistics ---
+
+PING 10.1.0.78 (10.1.0.78) 56(84) bytes of data.
+64 bytes from 10.1.0.78: icmp_seq=1 ttl=64 time=20.5 ms
+64 bytes from 10.1.0.78: icmp_seq=2 ttl=64 time=20.9 ms
+64 bytes from 10.1.0.78: icmp_seq=3 ttl=64 time=20.3 ms
+
+--- 10.1.0.78 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 20.261/20.722/21.420/0.501 ms
+rtt min/avg/max/mdev = 20.341/20.577/20.860/0.214 ms
+
 reset latency
 latency set to 0s
-ping target
-PING 10.1.0.20 (10.1.0.20) 56(84) bytes of data.
-64 bytes from 10.1.0.20: icmp_seq=1 ttl=64 time=0.074 ms
-64 bytes from 10.1.0.20: icmp_seq=2 ttl=64 time=0.226 ms
-64 bytes from 10.1.0.20: icmp_seq=3 ttl=64 time=0.195 ms
 
---- 10.1.0.20 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2049ms
-rtt min/avg/max/mdev = 0.074/0.165/0.226/0.065 ms
+
+ping target
+PING 10.1.0.78 (10.1.0.78) 56(84) bytes of data.
+64 bytes from 10.1.0.78: icmp_seq=1 ttl=64 time=0.119 ms
+64 bytes from 10.1.0.78: icmp_seq=2 ttl=64 time=0.070 ms
+64 bytes from 10.1.0.78: icmp_seq=3 ttl=64 time=0.132 ms
+
+--- 10.1.0.78 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2044ms
+rtt min/avg/max/mdev = 0.070/0.107/0.132/0.026 ms
 pod "client" deleted
 ```
 
