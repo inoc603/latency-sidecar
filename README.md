@@ -32,6 +32,8 @@ make k8s/test
 
 ### 原理验证
 
+[commit](https://github.com/inoc603/latency-sidecar/commit/fd48fafc7df06831bc9efc3b0ab88f5f85431d50)
+
 经过简单的搜索，了解到可以使用 [tc](https://man7.org/linux/man-pages/man8/tc.8.html)
 等工具设置网络延时。通过 [Dockerfile.poc](./Dockerfile.poc) 中，我们创建一个有相关依赖
 的镜像，在本地使用 docker 对原理进行验证：
@@ -92,6 +94,8 @@ rtt min/avg/max/mdev = 20.246/25.485/43.983/9.277 ms
 
 ## 使用 TC 命令行实现接口
 
+[commit](https://github.com/inoc603/latency-sidecar/commit/98e5af16c103dbbed225c529f970df5c221b601e)
+
 程序中调用命令行工具并不是一个特别好的办法，但我们可以先通过调用 tc
 命令来实现，以作为基准，再选择更好的 rtnetlink api。
 
@@ -149,6 +153,8 @@ pod "client" deleted
 这里为了简单，没有写程序检查结果，暂时靠肉眼观察输出即可。
 
 ## 直接使用 netlink 实现接口
+
+[commit](https://github.com/inoc603/latency-sidecar/commit/f0a4e56517a56100138e54201a5cf9eff4abb838)
 
 经过简单的搜索，找到了 [github.com/vishvananda/netlink](https://github.com/vishvananda/netlink)
 这个比较完整的、纯 go 的 netlink 实现。为了简单起见，我们使用不同的文件
